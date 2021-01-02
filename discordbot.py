@@ -180,6 +180,6 @@ async def help(ctx):
     em.add_field(name = "Contact", value = "\n```Join The Support Server! --> https://discord.gg/TAKqzHeTtn ```")
     await ctx.send(embed = em)
 
-client.run("Nzk0MjA0NDkwOTAzMTkxNTYz.X-3akg._Yj2GzQji6khfyvx18b4qj0Y9mE")
+client.run("token")
 
 #Made By Grizz#7690 https://discord.gg/TAKqzHeTtn
