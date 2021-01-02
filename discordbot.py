@@ -4,6 +4,7 @@ from random import randint
 from discord.utils import get
 from discord import Member
 from discord.ext.commands import has_permissions, MissingPermissions
+from keep_alive import keep_alive
 
 
 client = commands.Bot(command_prefix="m.")
@@ -11,7 +12,7 @@ client = commands.Bot(command_prefix="m.")
 #startup
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game('m.help   | Moderation Bot For Your Server Invite it here --> '))
+    await client.change_presence(activity=discord.Game('m.help   | Moderation Bot For Your Server Invite it here --> http://bit.ly/383IjtK '))
     print("------------------------------------\n           Bot is Running:  \n------------------------------------")
 
 #New Member Joining
@@ -73,8 +74,8 @@ async def on_command_error(ctx, error):
         await ctx.send('Please pass in all requirements :rolling_eyes:.')
     if isinstance(error, commands.MissingPermissions):
         await ctx.send("You dont have all the Perms :angry:")
-    if isinstance(error, discord.ext.commands.CommandInvokeError):
-        await ctx.send("I dont have all the Perms to do that :angry:")
+    #if isinstance(error, discord.ext.commands.CommandInvokeError):
+        #await ctx.send("I dont have all the Perms to do that :angry:")
 
 #Ban
 @client.command(name="ban", pass_context=True)
@@ -167,19 +168,31 @@ async def example(ctx):
     mbed.add_field(name = "Explanation", value = "here we see the prefix is m. and the channel ID is a number so we've deleted a channel. Right click a channel for its ID")
     await ctx.send(embed = mbed)
 
+#invite
+@client.command()
+async def invite(ctx):
+    mbed = discord.Embed(title = "Invite Link For Bot!! Spread It Around!!", description = "```http://bit.ly/383IjtK```")
+    await ctx.send(embed = mbed)
 
+
+#servercount
+@client.command(pass_context = True)
+async def servercount(ctx):
+  await ctx.send(f"I'm in {len(client.guilds)} servers!") 
 
 #help 
 client.remove_command("help")
 @client.command()
 async def help(ctx):
     em = discord.Embed(title = "Help", description = "", colour = ctx.author.colour)
-    em.add_field(name = "Vanity", value = "ping\nexample\nclear\nrandomint (prefix.test)\ntestdm (prefix.test)\nsnipe")
+    em.add_field(name = "Vanity", value = "ping\nexample\nclear\nrandomint (prefix.test)\ntestdm (prefix.test)\nsnipe\ninvite\nbotservers")
     em.add_field(name = "Channels", value = "deletechannel\ncreatechannel")
     em.add_field(name = "Moderation", value = "ban\nkick\nWarn\nunban\n")
     em.add_field(name = "Contact", value = "\n```Join The Support Server! --> https://discord.gg/TAKqzHeTtn ```")
     await ctx.send(embed = em)
 
+keep_alive()
 client.run("token")
 
-#Made By Grizz#7690 https://discord.gg/TAKqzHeTtn
+#Made By Grizz#7690 
+#https://discord.gg/TAKqzHeTtn
