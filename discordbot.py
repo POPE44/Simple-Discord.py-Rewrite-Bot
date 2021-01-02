@@ -1,4 +1,4 @@
-mport discord, random, asyncio
+import discord, random, asyncio
 from discord.ext import commands
 from random import randint
 from discord.utils import get
@@ -6,14 +6,19 @@ from discord import Member
 from discord.ext.commands import has_permissions, MissingPermissions
 
 
-client = commands.Bot(command_prefix="!")
+client = commands.Bot(command_prefix="m.")
 
 #startup
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game('P!help    | Custom Status '))
+    await client.change_presence(activity=discord.Game('m.help   | Moderation Bot For Your Server Invite it here --> '))
     print("------------------------------------\n           Bot is Running:  \n------------------------------------")
 
+#New Member Joining
+@client.event
+async def on_member_join(member):
+    role = discord.utils.get(member.guild.roles, name = "Member")
+    await member.add_roles(role)
 
 #test dms
 @client.command()
@@ -34,15 +39,16 @@ async def ping(ctx):
 async def rng(ctx):
     stock_opt = randint(0, 4)
     if stock_opt <= int(2):
-        await ctx.send("Number is low!!")    
+        await ctx.send("Number is low!!") 
+        await ctx.send(stock_opt)   
     else:
         stock_opt > int(2)
         await ctx.send("Number is High!!")  
-
+        await ctx.send(stock_opt)
 
 #Dm a line from a .txt
 @client.command()
-async def nord(ctx):
+async def txt(ctx):
     if ctx.channel.id == ("channel id"):
         with open("C:\\Users\\range\\Desktop\\.txt\\") as f:     #Have the path there (obv)
             lines = f.readlines()
@@ -52,17 +58,13 @@ async def nord(ctx):
         await ctx.send("Not The right channel sorry")
 
 #Kick
-@client.command()
-
-@commands.has_permissions(administrator=True)
+@client.command(name="kick", pass_context = True)
+@commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member):
-        try: 
-            await member.kick()
-            await ctx.message.add_reaction(" ")
-            await ctx.send(f"{member.name} has been kicked by {ctx.author.name}!")
-            await log_channel.send(f"{ctx.author.name} has kicked {member.display_name}")
-                
-        except: discord.ext.commands.CommandInvokeError = await ctx.send("I dont have the right permissions for that :( ")
+    await member.kick()
+    await ctx.send("User " + member.display_name + " has been kicked")
+
+
 
 #Errors
 @client.event
@@ -70,40 +72,114 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send('Please pass in all requirements :rolling_eyes:.')
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send("You dont have all the requirements :angry:")
+        await ctx.send("You dont have all the Perms :angry:")
+    if isinstance(error, discord.ext.commands.CommandInvokeError):
+        await ctx.send("I dont have all the Perms to do that :angry:")
 
 #Ban
-@client.command()
+@client.command(name="ban", pass_context=True)
 @commands.has_permissions(ban_members = True)
-async def ban(ctx, member : discord.Member, *, reason = None):
-    await member.ban(reason = reason)
+async def ban(ctx, member : discord.Member, *, reason =None):
+    await member.ban(reason=reason)
+    await ctx.send("User " + member.display_name + " has been Banned")
 
 #Unban
 @client.command()
-@commands.has_permissions(administrator = True)
-async def unban(ctx, *, member):
-    banned_users = await ctx.guild.bans()
-    member_name, member_discriminator = member.split("#")
+async def unban(ctx, user: discord.User):
+    guild = ctx.guild
+    mbed = discord.Embed(
+        title = "Success!",
+        description = f"{user} has been successfully unbanned"
+    )
+    if ctx.author.guild_permissions.ban_members:
+        await ctx.send(embed=mbed)
+        await guild.unban(user=user)
 
-    for ban_entry in banned_users:
-        user = ban_entry.user
+#delete a channel
+@client.command()
+async def deletechannel(ctx, channel: discord.TextChannel):
+    await channel.delete()
+    mbed = discord.Embed(
+        title = "Success",
+        description = f"Channel: {channel} has been deleted",
+    )
+    if ctx.author.guild_permissions.manage_channels: 
+        await ctx.send(embed=mbed)
 
-        if (user.name, user.discriminator) == (member_name, member_discriminator):
-            await ctx.guild.unban(user)
-            await ctx.send(f'Unbanned {user.mention}')
-            return
+#create channel
+@client.command()
+async def addchannel(ctx, channelName):
+    guild = ctx.guild
+    mbed = discord.Embed(
+        title = "Channel Created!",
+        description = "{} has been succesfully created".format(channelName)
+    )
+    if ctx.author.guild_permissions.manage_channels:
+        await guild.create_text_channel(name="{}".format(channelName))
+        await ctx.send(embed=mbed)
+
+
+#snipe
+snipe_message_content = None
+snipe_message_author = None
+snipe_message_id = None
+
+@client.event
+async def on_message_delete(message):
+
+    global snipe_message_content
+    global snipe_message_author
+    global snipe_message_id
+
+    snipe_message_content = message.content
+    snipe_message_author = message.author.id
+    snipe_message_id = message.id
+    await asyncio.sleep(60)
+
+    if message.id == snipe_message_id:
+        snipe_message_author = None
+        snipe_message_content = None
+        snipe_message_id = None
+
+@client.command()
+async def snipe(message):
+    if snipe_message_content==None:
+        await message.channel.send("Theres nothing to snipe.")
+    else:
+        embed = discord.Embed(description=f"{snipe_message_content}")
+        embed.set_footer(text=f"Said By {message.author.name}#{message.author.discriminator}", icon_url=message.author.avatar_url)
+        embed.set_author(name= f"<@{snipe_message_author}>")
+        await message.channel.send(embed=embed)
+        return        
+
+
+
+
+#clear
+@client.command()
+async def clear(ctx, amount=5):
+	await ctx.channel.purge(limit=amount)
+
+#exapmle
+@client.command()
+async def example(ctx):
+    mbed = discord.Embed(title = "Example command", description = "```m.deletechannel 794732280680546344```")
+    mbed.add_field(name = "Explanation", value = "here we see the prefix is m. and the channel ID is a number so we've deleted a channel. Right click a channel for its ID")
+    await ctx.send(embed = mbed)
+
+
 
 #help 
 client.remove_command("help")
 @client.command()
 async def help(ctx):
-    em = discord.Embed(title = "Help", description = "Permanent Invite link To My Server! --> https://discord.gg/Server ", colour = ctx.author.colour)
-    em.add_field(name = "Set 1", value = "1\n2\n3\n4\n5\n6\n7\n8\n")
-    em.add_field(name = "Set 2", value = "1, 2")
-    em.add_field(name = "Moderation", value = "ban\n kick\n Warn\n")
-
+    em = discord.Embed(title = "Help", description = "", colour = ctx.author.colour)
+    em.add_field(name = "Vanity", value = "ping\nexample\nclear\nrandomint (prefix.test)\ntestdm (prefix.test)\nsnipe")
+    em.add_field(name = "Channels", value = "deletechannel\ncreatechannel")
+    em.add_field(name = "Moderation", value = "ban\nkick\nWarn\nunban\n")
+    em.add_field(name = "Contact", value = "\n```Join The Support Server! --> https://discord.gg/TAKqzHeTtn ```")
     await ctx.send(embed = em)
 
-client.run("Token")
+client.run("Nzk0MjA0NDkwOTAzMTkxNTYz.X-3akg._Yj2GzQji6khfyvx18b4qj0Y9mE")
 
-#Made By Grizz#7690
+#Made By Grizz#7690 https://discord.gg/TAKqzHeTtn
