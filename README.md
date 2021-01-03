@@ -1,5 +1,5 @@
 # Simple Discord Bot Written with Discord.py Rewrite!
-A discord bot written in Discord.py Rewrite that has multiple features including Admin Commnands --> & most importantly DM ommands and channel limiting.
+A discord bot written in Discord.py Rewrite that has multiple features including Admin Commnands --> & most importantly DM commands and channel limiting.
 
 ## Installation
 Install the nessecary Components
