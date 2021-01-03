@@ -16,6 +16,7 @@ python3 "discordbot.py"
 ```
 
 ## Key Blocks
+Dm A member
 ```python
 @client.command()
 async def test(ctx):
@@ -23,16 +24,16 @@ async def test(ctx):
         await ctx.author.send("Testing your Dms, 123")
         await ctx.send("Test Dm Sent! ")
     else:
-        await ctx.send("Not The right channel sorry")```
-       
+        await ctx.send("Not The right channel sorry")
+```
+Ban a member    
 ```python
 @client.command(name="ban", pass_context=True)
 @commands.has_permissions(ban_members = True)
 async def ban(ctx, member : discord.Member, *, reason =None):
     await member.ban(reason=reason)
-    await ctx.send("User " + member.display_name + " has been Banned")```
-    
-Each of these show how to ban and dm a user respectively.
+    await ctx.send("User " + member.display_name + " has been Banned")
+```
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
