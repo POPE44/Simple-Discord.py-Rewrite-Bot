@@ -15,6 +15,25 @@ pip3 install asyncio
 python3 "discordbot.py"
 ```
 
+## Key Blocks
+```python
+@client.command()
+async def test(ctx):
+    if ctx.channel.id == ("Channel Id Here"):
+        await ctx.author.send("Testing your Dms, 123")
+        await ctx.send("Test Dm Sent! ")
+    else:
+        await ctx.send("Not The right channel sorry")```
+       
+```python
+@client.command(name="ban", pass_context=True)
+@commands.has_permissions(ban_members = True)
+async def ban(ctx, member : discord.Member, *, reason =None):
+    await member.ban(reason=reason)
+    await ctx.send("User " + member.display_name + " has been Banned")```
+    
+Each of these show how to ban and dm a user respectively.
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
@@ -27,4 +46,6 @@ Discord: Grizz#7690
 Join The Bot Server For Questions and More!! ---> https://discord.gg/Q4zX3JbGxG
 
 Email: Grizzly43256@gmail.com
+
+Music Bot Coming Soon!
 
